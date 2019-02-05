@@ -1,5 +1,3 @@
-print("hello world!")
-
 #import cPickle as pickle
 import pickle
 from keras.models import Model
@@ -7,10 +5,13 @@ import numpy as np
 from os.path import isfile
 
 
+def unet():
+
+
+
 class model:
     
     def __init__(self,      #we are required to determine all these variables to pass them in tf.Model
-                 _proportionTrainVal=0.8,
                  _batchSize=None,
                  _epochs=8,
                  _verbose=1,
@@ -21,8 +22,8 @@ class model:
                  _sampleWeight=None,
                  _initialEpoch=0,
                  _stepsPerEpoch=1500,
-                 _validationSteps=20):
-        self.proportionTrainVal = _proportionTrainVal
+                 _validationSteps=20,
+                 _proportionTrainVal=0.8): 
         self.batchSize = _batchSize
         self.epochs = _numberOfEpochs
         self.verbose = _verbose
@@ -33,8 +34,9 @@ class model:
         self.sampleWeight = _sampleWeight
         self.initialEpoch = _initialEpoch
         self.stepsPerEpoch = _stepsPerEpoch
-        self.validationSteps = _validationSteps
-        
+        self.validationSteps = _validationStep
+
+        self.proportionTrainVal = _proportionTrainVal
         self.model = Model()
         self.modelCheckpoint = 0    # we have to decide about modelCheckpoint type. and we really want to use it if we have callbacks?
         if (_callbacks != None):
@@ -47,19 +49,14 @@ class model:
         featuresVal = np.array(X[borderTrainVal:])
         labelsVal = np.array(y[borderTrainVal:])
         
-        datasetTrain = get_dataset(featuresTrain,
-                                   labelsTrain)  # features and labels are arrays or lists? and other parameters
-        datasetVal = get_dataset(featuresVal,
-                                 labelsVal)
-        
-        self.model.fit(x=datasetTrain,
-                       y=None,  # because x is dataset which contains y
+        self.model.fit(x=featuresTrain,
+                       y=labelsTrain,
                        batch_size=self.batchSize,
                        epochs=self.epochs,
                        verbose=self.verbose,
                        callbacks=self.callbacks,
                        validation_split=self.validationSplit,
-                       validation_data=datasetVal,
+                       validation_data=(featuresVal, labelsVal),
                        shuffle=self.shuffle,
                        class_weight=self.classWeight,
                        sample_weight=self.sampleWeight,
